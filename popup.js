@@ -1,6 +1,7 @@
 const DEFAULT_PREFERENCES = {
   showLinks: false,
-  focusMode: false
+  focusMode: false,
+  defaultTocSize: 'full'
 };
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -13,13 +14,21 @@ function loadPreferences() {
   chrome.storage.sync.get(DEFAULT_PREFERENCES, function (items) {
     document.getElementById('showLinks').checked = items.showLinks;
     document.getElementById('focusMode').checked = items.focusMode;
+
+    const radioButton = document.getElementById(`tocSize${items.defaultTocSize.charAt(0).toUpperCase() + items.defaultTocSize.slice(1)}`);
+    if (radioButton) {
+      radioButton.checked = true;
+    }
   });
 }
 
 function savePreferences() {
+  const defaultTocSize = document.querySelector('input[name="defaultTocSize"]:checked')?.value || 'full';
+  
   const preferences = {
     showLinks: document.getElementById('showLinks').checked,
-    focusMode: document.getElementById('focusMode').checked
+    focusMode: document.getElementById('focusMode').checked,
+    defaultTocSize: defaultTocSize
   };
 
   chrome.storage.sync.set(preferences, function () {

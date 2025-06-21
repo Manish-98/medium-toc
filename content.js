@@ -1,6 +1,7 @@
 const DEFAULT_PREFERENCES = {
   showLinks: false,
-  focusMode: false
+  focusMode: false,
+  defaultTocSize: 'full'
 };
 
 let currentPreferences = { ...DEFAULT_PREFERENCES };
@@ -182,7 +183,7 @@ function displayHierarchy(hierarchy, links = []) {
   });
 
   if (window.TOCHelper && window.TOCHelper.createTOCComponent) {
-    window.TOCHelper.createTOCComponent(hierarchy, links);
+    window.TOCHelper.createTOCComponent(hierarchy, links, currentPreferences.defaultTocSize);
   } else {
     console.warn('TOCHelper not available, TOC component not created');
   }

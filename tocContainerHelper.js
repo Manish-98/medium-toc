@@ -172,7 +172,7 @@ function populateTOCContent(container, hierarchy, links = []) {
   }
 }
 
-function createTOCComponent(hierarchy, links = []) {
+function createTOCComponent(hierarchy, links = [], defaultTocSize = 'full') {
   if (hierarchy.length === 0) {
     return;
   }
@@ -191,6 +191,14 @@ function createTOCComponent(hierarchy, links = []) {
 
   populateTOCContent(contentWrapper, hierarchy, links);
   tocContainer.appendChild(contentWrapper);
+
+
+  if (defaultTocSize === 'minimized') {
+    tocContainer.classList.add('minimized');
+    minimizeButton.textContent = '+';
+    minimizeButton.title = 'Expand';
+    tocContainer.appendChild(minimizeButton);
+  }
 
   document.body.appendChild(tocContainer);
 }

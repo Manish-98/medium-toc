@@ -1,5 +1,27 @@
 console.log('Medium TOC Extension loaded');
 
+const DEFAULT_PREFERENCES = {
+  showLinks: false,
+  includeImages: false
+};
+
+let currentPreferences = { ...DEFAULT_PREFERENCES };
+
+function loadPreferences() {
+  chrome.storage.sync.get(DEFAULT_PREFERENCES, function (items) {
+    currentPreferences = items;
+    console.log('Loaded preferences:', currentPreferences);
+  });
+}
+
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  if (request.action === 'preferencesUpdated') {
+    currentPreferences = request.preferences;
+    console.log('Preferences updated:', currentPreferences);
+    runHeadingDetection('preferences updated');
+  }
+});
+
 function findHeadings() {
   console.log('Looking for H1 and H2 headings...');
   const allHeadings = Array.from(document.querySelectorAll('h1, h2'));
@@ -18,9 +40,64 @@ function findHeadings() {
 
   const hierarchy = buildHierarchy(allHeadings);
 
-  displayHierarchy(hierarchy);
+  let links = [];
+  if (currentPreferences.showLinks) {
+    links = extractLinks();
+  }
+
+  displayHierarchy(hierarchy, links);
 
   return hierarchy;
+}
+
+function extractLinks() {
+  console.log('Extracting links from the blog...');
+
+  const contentSelectors = [
+    'article'
+  ];
+
+  let contentElement = null;
+  for (const selector of contentSelectors) {
+    contentElement = document.querySelector(selector);
+    if (contentElement) break;
+  }
+
+  if (!contentElement) {
+    console.log('Could not find main content area, searching entire page');
+    contentElement = document.body;
+  }
+
+  const allLinks = Array.from(contentElement.querySelectorAll('a[href]'));
+
+  const links = allLinks
+    .filter(link => {
+      const href = link.href;
+      const dataTestId = link.attributes.getNamedItem('data-testid')?.value;
+      const text = link.textContent.trim();
+
+      return text.length > 0 &&
+        !href.startsWith('#') &&
+        !dataTestId?.includes('authorName') &&
+        !href.includes('javascript:') &&
+        !text.toLowerCase().includes('share') &&
+        !text.toLowerCase().includes('follow') &&
+        !text.toLowerCase().includes('subscribe') &&
+        !text.toLowerCase().includes('clap') &&
+        !text.toLowerCase().includes('comment');
+    })
+    .map(link => ({
+      text: link.textContent.trim(),
+      href: link.href,
+      title: link.title || '',
+      element: link
+    }))
+    .filter((link, index, self) =>
+      index === self.findIndex(l => l.href === link.href)
+    );
+
+  console.log(`Extracted ${links.length} unique links`);
+  return links;
 }
 
 function buildHierarchy(headings) {
@@ -57,7 +134,7 @@ function buildHierarchy(headings) {
   return hierarchy;
 }
 
-function displayHierarchy(hierarchy) {
+function displayHierarchy(hierarchy, links = []) {
   console.log('\n=== HIERARCHICAL STRUCTURE ===');
 
   if (hierarchy.length === 0) {
@@ -90,7 +167,19 @@ function displayHierarchy(hierarchy) {
     console.log(`Orphaned H2s (no parent H1): ${orphanedH2}`);
   }
 
-  
+  if (currentPreferences.showLinks && links.length > 0) {
+    console.log('\n=== EXTRACTED LINKS ===');
+    links.forEach((link, index) => {
+      console.log(`${index + 1}. "${link.text}"`);
+      console.log(`   URL: ${link.href}`);
+      if (link.title) {
+        console.log(`   Title: ${link.title}`);
+      }
+      console.log('');
+    });
+    console.log(`Total links found: ${links.length}`);
+  }
+
   if (window.TOCHelper && window.TOCHelper.createTOCComponent) {
     window.TOCHelper.createTOCComponent(hierarchy);
   } else {
@@ -109,6 +198,8 @@ function runHeadingDetection(reason) {
     findHeadings();
   }
 }
+
+loadPreferences();
 
 window.addEventListener('DOMContentLoaded', () => runHeadingDetection('DOM loaded'));
 window.addEventListener('popstate', () => runHeadingDetection('navigation'));

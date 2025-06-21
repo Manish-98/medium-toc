@@ -3,14 +3,14 @@ const DEFAULT_PREFERENCES = {
   includeImages: false
 };
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   loadPreferences();
 
   document.getElementById('saveButton').addEventListener('click', savePreferences);
 });
 
 function loadPreferences() {
-  chrome.storage.sync.get(DEFAULT_PREFERENCES, function(items) {
+  chrome.storage.sync.get(DEFAULT_PREFERENCES, function (items) {
     document.getElementById('showLinks').checked = items.showLinks;
     document.getElementById('includeImages').checked = items.includeImages;
   });
@@ -22,10 +22,10 @@ function savePreferences() {
     includeImages: document.getElementById('includeImages').checked
   };
 
-  chrome.storage.sync.set(preferences, function() {
+  chrome.storage.sync.set(preferences, function () {
     showStatus('Settings saved successfully!', 'success');
-    
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       if (tabs[0] && tabs[0].url && tabs[0].url.includes('medium.com')) {
         chrome.tabs.sendMessage(tabs[0].id, {
           action: 'preferencesUpdated',
@@ -41,7 +41,7 @@ function showStatus(message, type) {
   statusElement.textContent = message;
   statusElement.className = `status ${type}`;
   statusElement.style.display = 'block';
-  
+
   setTimeout(() => {
     statusElement.style.display = 'none';
   }, 3000);

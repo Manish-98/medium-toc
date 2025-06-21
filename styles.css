@@ -155,3 +155,56 @@
 .medium-toc-child-link:hover {
   background-color: #f6f8fa;
 }
+
+.medium-toc-links-section {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #e1e4e8;
+}
+
+.medium-toc-links-header {
+  font-weight: 600;
+  font-size: 14px;
+  color: #24292e;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.medium-toc-links-list {
+  margin-left: 8px;
+}
+
+.medium-toc-link-item {
+  margin-bottom: 6px;
+  display: flex;
+  align-items: baseline;
+}
+
+.medium-toc-link-number {
+  color: #586069;
+  font-size: 13px;
+  margin-right: 4px;
+  flex-shrink: 0;
+}
+
+.medium-toc-link {
+  color: #0366d6;
+  text-decoration: none;
+  font-size: 13px;
+  display: inline;
+  padding: 2px 0;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+  flex: 1;
+  min-width: 0;
+}
+
+.medium-toc-link:hover {
+  background-color: #f6f8fa;
+  text-decoration: underline;
+}

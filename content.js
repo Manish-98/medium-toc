@@ -181,7 +181,7 @@ function displayHierarchy(hierarchy, links = []) {
   }
 
   if (window.TOCHelper && window.TOCHelper.createTOCComponent) {
-    window.TOCHelper.createTOCComponent(hierarchy);
+    window.TOCHelper.createTOCComponent(hierarchy, links);
   } else {
     console.warn('TOCHelper not available, TOC component not created');
   }

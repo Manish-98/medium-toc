@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <style>
@@ -9,31 +10,31 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       font-size: 14px;
     }
-    
+
     .option-group {
       margin-bottom: 16px;
     }
-    
+
     .option-group label {
       display: block;
       margin-bottom: 8px;
       font-weight: 500;
       color: #24292e;
     }
-    
+
     .toggle-switch {
       position: relative;
       display: inline-block;
       width: 44px;
       height: 24px;
     }
-    
+
     .toggle-switch input {
       opacity: 0;
       width: 0;
       height: 0;
     }
-    
+
     .slider {
       position: absolute;
       cursor: pointer;
@@ -45,7 +46,7 @@
       transition: .3s;
       border-radius: 24px;
     }
-    
+
     .slider:before {
       position: absolute;
       content: "";
@@ -57,21 +58,21 @@
       transition: .3s;
       border-radius: 50%;
     }
-    
-    input:checked + .slider {
+
+    input:checked+.slider {
       background-color: #0366d6;
     }
-    
-    input:checked + .slider:before {
+
+    input:checked+.slider:before {
       transform: translateX(20px);
     }
-    
+
     .description {
       font-size: 12px;
       color: #586069;
       margin-top: 4px;
     }
-    
+
     .save-button {
       width: 100%;
       padding: 10px;
@@ -83,11 +84,11 @@
       cursor: pointer;
       margin-top: 16px;
     }
-    
+
     .save-button:hover {
       background-color: #0256b3;
     }
-    
+
     .status {
       margin-top: 8px;
       padding: 8px;
@@ -95,13 +96,13 @@
       font-size: 12px;
       text-align: center;
     }
-    
+
     .status.success {
       background-color: #d4edda;
       color: #155724;
       border: 1px solid #c3e6cb;
     }
-    
+
     .status.error {
       background-color: #f8d7da;
       color: #721c24;
@@ -109,9 +110,10 @@
     }
   </style>
 </head>
+
 <body>
   <h2>Medium TOC Settings</h2>
-  
+
   <div class="option-group">
     <label for="showLinks">Show links section</label>
     <label class="toggle-switch">
@@ -120,7 +122,7 @@
     </label>
     <div class="description">Include links section in the table of contents</div>
   </div>
-  
+
   <div class="option-group">
     <label for="includeImages">Include images in TOC</label>
     <label class="toggle-switch">
@@ -129,11 +131,12 @@
     </label>
     <div class="description">Add image references to the table of contents</div>
   </div>
-  
+
   <button class="save-button" id="saveButton">Save Settings</button>
-  
+
   <div id="status" class="status" style="display: none;"></div>
-  
+
   <script src="popup.js"></script>
 </body>
+
 </html>

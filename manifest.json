@@ -5,7 +5,8 @@
     "description": "Automatically generates a table of contents for Medium articles",
     
     "permissions": [
-      "storage"
+      "storage",
+      "activeTab"
     ],
     
     "content_scripts": [

@@ -1,6 +1,6 @@
 const DEFAULT_PREFERENCES = {
   showLinks: false,
-  includeImages: false
+  focusMode: false
 };
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -12,14 +12,14 @@ document.addEventListener('DOMContentLoaded', function () {
 function loadPreferences() {
   chrome.storage.sync.get(DEFAULT_PREFERENCES, function (items) {
     document.getElementById('showLinks').checked = items.showLinks;
-    document.getElementById('includeImages').checked = items.includeImages;
+    document.getElementById('focusMode').checked = items.focusMode;
   });
 }
 
 function savePreferences() {
   const preferences = {
     showLinks: document.getElementById('showLinks').checked,
-    includeImages: document.getElementById('includeImages').checked
+    focusMode: document.getElementById('focusMode').checked
   };
 
   chrome.storage.sync.set(preferences, function () {

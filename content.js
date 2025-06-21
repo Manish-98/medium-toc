@@ -2,15 +2,24 @@ console.log('Medium TOC Extension loaded');
 
 const DEFAULT_PREFERENCES = {
   showLinks: false,
-  includeImages: false
+  focusMode: false
 };
 
 let currentPreferences = { ...DEFAULT_PREFERENCES };
+let originalBodyContent = null;
+let isFocusModeActive = false;
 
 function loadPreferences() {
   chrome.storage.sync.get(DEFAULT_PREFERENCES, function (items) {
     currentPreferences = items;
     console.log('Loaded preferences:', currentPreferences);
+
+    // Apply focus mode if it's enabled
+    if (currentPreferences.focusMode) {
+      enableFocusMode();
+    } else if (isFocusModeActive) {
+      disableFocusMode();
+    }
   });
 }
 
@@ -18,9 +27,63 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.action === 'preferencesUpdated') {
     currentPreferences = request.preferences;
     console.log('Preferences updated:', currentPreferences);
+
+    // Handle focus mode changes
+    if (currentPreferences.focusMode && !isFocusModeActive) {
+      enableFocusMode();
+    } else if (!currentPreferences.focusMode && isFocusModeActive) {
+      disableFocusMode();
+    }
+
     runHeadingDetection('preferences updated');
   }
 });
+
+function enableFocusMode() {
+  if (isFocusModeActive) return;
+
+  console.log('Enabling focus mode...');
+
+  // Find the root element
+  const rootElement = document.getElementById('root');
+  if (!rootElement) {
+    console.log('No root element found, cannot enable focus mode');
+    return;
+  }
+
+  // Store original content
+  originalBodyContent = rootElement.innerHTML;
+
+  // Find the article element
+  const article = document.querySelector('article');
+  if (!article) {
+    console.log('No article element found, cannot enable focus mode');
+    return;
+  }
+
+  // Replace root content with just the article
+  rootElement.innerHTML = article.outerHTML;
+
+  isFocusModeActive = true;
+  console.log('Focus mode enabled');
+}
+
+function disableFocusMode() {
+  if (!isFocusModeActive || !originalBodyContent) return;
+
+  console.log('Disabling focus mode...');
+
+  // Find the root element
+  const rootElement = document.getElementById('root');
+  if (rootElement) {
+    // Restore original content
+    rootElement.innerHTML = originalBodyContent;
+  }
+
+  isFocusModeActive = false;
+  originalBodyContent = null;
+  console.log('Focus mode disabled');
+}
 
 function findHeadings() {
   console.log('Looking for H1 and H2 headings...');

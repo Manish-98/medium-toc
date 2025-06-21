@@ -1,5 +1,3 @@
-console.log('Medium TOC Extension loaded');
-
 const DEFAULT_PREFERENCES = {
   showLinks: false,
   focusMode: false
@@ -12,9 +10,7 @@ let isFocusModeActive = false;
 function loadPreferences() {
   chrome.storage.sync.get(DEFAULT_PREFERENCES, function (items) {
     currentPreferences = items;
-    console.log('Loaded preferences:', currentPreferences);
 
-    // Apply focus mode if it's enabled
     if (currentPreferences.focusMode) {
       enableFocusMode();
     } else if (isFocusModeActive) {
@@ -26,9 +22,7 @@ function loadPreferences() {
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.action === 'preferencesUpdated') {
     currentPreferences = request.preferences;
-    console.log('Preferences updated:', currentPreferences);
 
-    // Handle focus mode changes
     if (currentPreferences.focusMode && !isFocusModeActive) {
       enableFocusMode();
     } else if (!currentPreferences.focusMode && isFocusModeActive) {
@@ -42,51 +36,36 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 function enableFocusMode() {
   if (isFocusModeActive) return;
 
-  console.log('Enabling focus mode...');
-
-  // Find the root element
   const rootElement = document.getElementById('root');
   if (!rootElement) {
-    console.log('No root element found, cannot enable focus mode');
     return;
   }
 
-  // Store original content
   originalBodyContent = rootElement.innerHTML;
 
-  // Find the article element
   const article = document.querySelector('article');
   if (!article) {
-    console.log('No article element found, cannot enable focus mode');
     return;
   }
 
-  // Replace root content with just the article
   rootElement.innerHTML = article.outerHTML;
 
   isFocusModeActive = true;
-  console.log('Focus mode enabled');
 }
 
 function disableFocusMode() {
   if (!isFocusModeActive || !originalBodyContent) return;
 
-  console.log('Disabling focus mode...');
-
-  // Find the root element
   const rootElement = document.getElementById('root');
   if (rootElement) {
-    // Restore original content
     rootElement.innerHTML = originalBodyContent;
   }
 
   isFocusModeActive = false;
   originalBodyContent = null;
-  console.log('Focus mode disabled');
 }
 
 function findHeadings() {
-  console.log('Looking for H1 and H2 headings...');
   const allHeadings = Array.from(document.querySelectorAll('h1, h2'));
 
   const writtenByIndex = allHeadings.findLastIndex(heading => heading.textContent.includes('Written by'));
@@ -94,10 +73,7 @@ function findHeadings() {
     allHeadings.splice(writtenByIndex, allHeadings.length - writtenByIndex);
   }
 
-  console.log(`Found ${allHeadings.length} total headings (H1 + H2)`);
-
   if (allHeadings.length === 0) {
-    console.log('No H1 or H2 headings found on this page');
     return [];
   }
 
@@ -114,8 +90,6 @@ function findHeadings() {
 }
 
 function extractLinks() {
-  console.log('Extracting links from the blog...');
-
   const contentSelectors = [
     'article'
   ];
@@ -127,7 +101,6 @@ function extractLinks() {
   }
 
   if (!contentElement) {
-    console.log('Could not find main content area, searching entire page');
     contentElement = document.body;
   }
 
@@ -159,7 +132,6 @@ function extractLinks() {
       index === self.findIndex(l => l.href === link.href)
     );
 
-  console.log(`Extracted ${links.length} unique links`);
   return links;
 }
 
@@ -198,50 +170,16 @@ function buildHierarchy(headings) {
 }
 
 function displayHierarchy(hierarchy, links = []) {
-  console.log('\n=== HIERARCHICAL STRUCTURE ===');
-
   if (hierarchy.length === 0) {
-    console.log('No hierarchy created');
     return;
   }
 
   hierarchy.forEach((section, sectionIndex) => {
-    console.log(`${sectionIndex + 1}. ${section.level === 1 ? 'H1' : 'H2'}: "${section.text}"`);
-
     if (section.children && section.children.length > 0) {
       section.children.forEach((child, childIndex) => {
-        console.log(`   ${sectionIndex + 1}.${childIndex + 1}. H2: "${child.text}"`);
       });
     }
-
-    if (sectionIndex < hierarchy.length - 1) {
-      console.log('');
-    }
   });
-
-  const totalH1 = hierarchy.filter(item => item.level === 1).length;
-  const totalH2 = hierarchy.reduce((count, item) => count + (item.children ? item.children.length : 0), 0);
-  const orphanedH2 = hierarchy.filter(item => item.level === 2).length;
-
-  console.log('\n=== SUMMARY ===');
-  console.log(`Total H1 sections: ${totalH1}`);
-  console.log(`Total H2 subsections: ${totalH2}`);
-  if (orphanedH2 > 0) {
-    console.log(`Orphaned H2s (no parent H1): ${orphanedH2}`);
-  }
-
-  if (currentPreferences.showLinks && links.length > 0) {
-    console.log('\n=== EXTRACTED LINKS ===');
-    links.forEach((link, index) => {
-      console.log(`${index + 1}. "${link.text}"`);
-      console.log(`   URL: ${link.href}`);
-      if (link.title) {
-        console.log(`   Title: ${link.title}`);
-      }
-      console.log('');
-    });
-    console.log(`Total links found: ${links.length}`);
-  }
 
   if (window.TOCHelper && window.TOCHelper.createTOCComponent) {
     window.TOCHelper.createTOCComponent(hierarchy, links);
@@ -254,10 +192,8 @@ let lastRunTime = 0;
 const runInterval = 300;
 function runHeadingDetection(reason) {
   const now = Date.now();
-  console.log(`now: ${now}, lastRunTime: ${lastRunTime}, runInterval: ${runInterval}`);
   if (now - lastRunTime >= runInterval) {
     lastRunTime = now;
-    console.log(`\n🔍 Running heading detection on: ${window.location.href} (${reason})`);
     findHeadings();
   }
 }
@@ -296,10 +232,7 @@ const observer = new MutationObserver((mutations) => {
   });
 
   if (significantChange) {
-    console.log('\n🔄 Significant DOM changes detected, re-checking headings...');
     runHeadingDetection('DOM change');
   }
 });
 observer.observe(document.body, { childList: true, subtree: true });
-
-console.log('✅ URL change detection and DOM observer set up');

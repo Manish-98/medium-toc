@@ -14,7 +14,7 @@
           "*://medium.com/*",
           "*://*.medium.com/*"
         ],
-        "js": ["content.js"],
+        "js": ["tocContainerHelper.js", "content.js"],
         "css": ["styles.css"],
         "run_at": "document_end"
       }

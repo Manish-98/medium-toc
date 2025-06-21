@@ -89,8 +89,14 @@ function displayHierarchy(hierarchy) {
   if (orphanedH2 > 0) {
     console.log(`Orphaned H2s (no parent H1): ${orphanedH2}`);
   }
-}
 
+  
+  if (window.TOCHelper && window.TOCHelper.createTOCComponent) {
+    window.TOCHelper.createTOCComponent(hierarchy);
+  } else {
+    console.warn('TOCHelper not available, TOC component not created');
+  }
+}
 
 let lastRunTime = 0;
 const runInterval = 300;

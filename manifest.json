@@ -1,0 +1,27 @@
+{
+    "manifest_version": 3,
+    "name": "Medium Table of Contents",
+    "version": "1.0.0",
+    "description": "Automatically generates a table of contents for Medium articles",
+    
+    "permissions": [
+      "storage"
+    ],
+    
+    "content_scripts": [
+      {
+        "matches": [
+          "*://medium.com/*",
+          "*://*.medium.com/*"
+        ],
+        "js": ["content.js"],
+        "css": ["styles.css"],
+        "run_at": "document_end"
+      }
+    ],
+    
+    "action": {
+      "default_popup": "popup.html",
+      "default_title": "Medium TOC Settings"
+    }
+  }
